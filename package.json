@@ -1,0 +1,58 @@
+{
+  "name": "queuepulse-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "QueuePulse AI - shop CCTV analytics desktop MVP",
+  "main": "electron/main.cjs",
+  "author": "QueuePulse AI",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on tcp:5173 && electron .\"",
+    "build": "vite build",
+    "test:analytics": "node --test src/analytics.test.mjs",
+    "test:camera": "node --test electron/camera-compatibility.test.cjs && python -m unittest worker.test_camera_source worker.test_worker",
+    "test": "npm run test:analytics && npm run test:camera",
+    "start": "electron .",
+    "dist:win": "npm run build && electron-builder --win nsis"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "electron": "^34.0.0",
+    "electron-builder": "^25.1.8",
+    "vite": "^6.0.7",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.queuepulse.ai",
+    "productName": "QueuePulse AI",
+    "directories": { "output": "release" },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "worker",
+        "to": "worker",
+        "filter": ["**/*", "!**/__pycache__/**", "!**/*.pyc"]
+      }
+    ],
+    "win": {
+      "target": ["nsis"],
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
